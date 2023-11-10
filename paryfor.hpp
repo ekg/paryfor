@@ -777,13 +777,13 @@ void parallel_for(const I& begin,
     for (uint64_t t = 0; t < nthreads; ++t) {
         workers.emplace_back(worker, t);
     }
-    std::pair<I, I> todo_range = std::make_pair(begin, std::min(begin + chunk_size, end));
+    std::pair<I, I> todo_range = std::make_pair(begin, std::min(begin + static_cast<I>(chunk_size), end));
     I& todo_i = todo_range.first;
     I& todo_j = todo_range.second;
     while (todo_i != end) {
         if (queue.try_push(todo_range)) {
-            todo_i = std::min(todo_i + chunk_size, end);
-            todo_j = std::min(todo_j + chunk_size, end);
+            todo_i = std::min(todo_i + static_cast<I>(chunk_size), end);
+            todo_j = std::min(todo_j + static_cast<I>(chunk_size), end);
         } else {
             std::this_thread::sleep_for(std::chrono::nanoseconds(1));
         }
